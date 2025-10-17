@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Chat</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a cleaner look and scrollbar */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        #chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        #chat-box::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        #chat-box::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        #chat-box::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-md bg-white rounded-lg shadow-lg p-6 space-y-4">
+        <h1 class="text-2xl font-bold text-center text-gray-800">Real-Time Chat</h1>
+
+        <!-- Username Input -->
+        <div>
+            <input type="text" id="username" placeholder="Your name (e.g., Alice)" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Chat Messages Display -->
+        <div id="chat-box" class="h-80 overflow-y-auto p-4 border border-gray-300 rounded-lg bg-gray-50">
+            <!-- Messages will be dynamically inserted here -->
+        </div>
+
+        <!-- Message Input Form -->
+        <div class="flex space-x-2">
+            <input type="text" id="message-input" placeholder="Type your message..." class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="send-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg">
+                Send
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        // Initial chat messages to populate the chat
+        let messages = [
+            { user: 'Alice', text: 'Hi Bob', timestamp: '11:25:18' },
+            { user: 'Bob', text: 'Hey Alice', timestamp: '11:27:50' },
+        ];
+
+        // --- DOM ELEMENTS ---
+        const usernameInput = document.getElementById('username');
+        const chatBox = document.getElementById('chat-box');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        // --- RENDER FUNCTION ---
+
+        /**
+         * Renders all messages in the chat box.
+         */
+        function renderMessages() {
+            chatBox.innerHTML = ''; // Clear the chat box first
+            messages.forEach(msg => {
+                const messageElement = document.createElement('p');
+                messageElement.className = 'mb-2';
+                // Format the message string
+                messageElement.innerHTML = `<strong class="text-gray-800">${msg.user}</strong> <span class="text-gray-500 text-sm">[${msg.timestamp}]</span>: <span class="text-gray-700">${msg.text}</span>`;
+                chatBox.appendChild(messageElement);
+            });
+            // Auto-scroll to the bottom of the chat box
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // --- LOGIC FUNCTIONS ---
+
+        /**
+         * Sends a new message.
+         */
+        function sendMessage() {
+            const user = usernameInput.value.trim();
+            const text = messageInput.value.trim();
+
+            if (!user) {
+                alert('Please enter your name.');
+                return;
+            }
+            if (!text) {
+                return; // Don't send empty messages
+            }
+            
+            // Get the current time for the timestamp
+            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+
+            // Add the new message to the array
+            messages.push({ user, text, timestamp });
+
+            // Re-render the chat messages
+            renderMessages();
+
+            // Clear the input field
+            messageInput.value = '';
+        }
+
+        // --- EVENT LISTENERS ---
+
+        // Send message on button click
+        sendButton.addEventListener('click', sendMessage);
+
+        // Send message on pressing 'Enter' in the input field
+        messageInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // --- INITIAL RENDER ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMessages();
+        });
+
+    </script>
+</body>
+</html>
+
